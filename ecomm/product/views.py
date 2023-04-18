@@ -15,6 +15,14 @@ class CategoryViewSet(viewsets.ViewSet):
 
 class ProductViewSet(viewsets.ViewSet):
     queryset = Product.objects.all()
+    lookup_field = "slug"
+
+    def retrieve(self, request, slug=None):
+        serializer = ProductSerializer(
+            self.queryset.filter(slug=slug).select_related("category", "brand"),
+            many=True,
+        )
+        return Response(serializer.data)
 
     def list(self, request):
         serializer = ProductSerializer(self.queryset, many=True)
